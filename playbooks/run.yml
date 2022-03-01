@@ -1,0 +1,73 @@
+# test5.yml
+
+---
+  - name: Get URL and unzip
+    hosts: envlocal
+    # become: yes
+    vars:
+      server: "https://data.gov.sg"
+      #endpoint: "/api/action/datastore_search?resource_id=9ec89dc0-cb6b-4604-aaff-382d5e850206&limit=100"
+      endpoint: "/dataset/"
+      url: "https://data.gov.sg/dataset/b72f297b-231d-4ba2-9998-86a93a0a903f/download"
+      path1: "../data-download"
+      path2: "../results"
+      url_list:
+        - 249f1149-1e04-40e2-81c6-bfab3bba5574/download
+        - f6048a81-0f7b-436c-8bfa-ebe1bb42cfdc/download
+    tasks:
+      - name: Preparing /data-download directory
+        file:
+          path: "{{ path1 }}"
+          state: directory
+          mode: 0755
+      - name: Preparing /data-download directory        
+        file:
+          path: "{{ path2 }}"
+          state: directory
+          mode: 0755
+
+      - name: Downloading in progress...
+        get_url: 
+          url: "{{ server }}{{ endpoint }}{{ item }}"
+          dest: "{{ path1 }}"
+          mode: 0755
+          force_basic_auth: yes
+        loop: "{{ url_list }}"
+
+      - name: Capture zip files
+        find:
+          paths: "{{ path1 }}"
+          file_type: file
+          patterns: '*.zip'
+        register: result_zip
+
+      - name: The file to print
+        debug:
+          msg: " myitem: {{ item }}"
+        loop: "{{ result_zip.files | map(attribute='path') }}"
+
+      - name: Explode zip files
+        unarchive:
+          src: "{{ item }}"
+          dest: "{{ path1 }}"
+        loop: "{{ result_zip.files | map(attribute='path') }}"
+
+      - name: Capture CSV files
+        find:
+          paths: "{{ path1 }}"
+          file_type: file
+          patterns: '*.csv'
+        register: result_csv
+
+      - name: Files to Process check
+        debug:
+          msg: " myitem: {{ item }}"
+        loop: "{{ result_csv.files | map(attribute='path') }}"
+
+      - name: Python script activate for data polishing
+        script: datacleaning.py
+        args:
+          executable: python3
+        register: result_final
+      - debug:
+          var: result_final.stdout_lines
