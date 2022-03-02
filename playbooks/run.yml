@@ -8,7 +8,6 @@
       server: "https://data.gov.sg"
       #endpoint: "/api/action/datastore_search?resource_id=9ec89dc0-cb6b-4604-aaff-382d5e850206&limit=100"
       endpoint: "/dataset/"
-      url: "https://data.gov.sg/dataset/b72f297b-231d-4ba2-9998-86a93a0a903f/download"
       path1: "../data-download"
       path2: "../results"
       url_list:
