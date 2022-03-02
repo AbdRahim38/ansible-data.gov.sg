@@ -1,4 +1,5 @@
-# test5.yml
+# run.yml
+# access data.gov.sg to retrieve csv and process data
 
 ---
   - name: Get URL and unzip
