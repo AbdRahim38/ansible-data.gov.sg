@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-# https://www.youtube.com/watch?v=2AFGPdNn4FM
 
 import fnmatch
 import os
 import pandas as pd
 
-#variable declaration
+# variable declaration
 csv_files = []
 my_path = '../data-download/'
 my_path_result = '../results/'
